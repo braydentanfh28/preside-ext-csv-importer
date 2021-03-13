@@ -1,0 +1,6 @@
+{
+	  "id"        : "preside-ext-csv-importer"
+	, "title"     : "CSV importer"
+	, "author"    : "Brayden Tan"
+	, "version"   : "0.1.0"
+}

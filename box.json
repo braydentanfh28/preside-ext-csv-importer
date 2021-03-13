@@ -1,0 +1,21 @@
+{
+    "name":"PresideCMS Extension: CSV Importer",
+    "type":"preside-extensions",
+    "version":"0.1.0",
+    "location":"",
+    "private":true,
+    "author":"Brayden Tan",
+    "directory":"application/extensions",
+    "repository":{
+        "type":"git",
+        "URL":""
+    },
+    "slug":"preside-ext-csv-importer",
+    "projectURL":"",
+    "ignore":[
+        ".git/*",
+        ".gitignore",
+        ".travis.yml",
+        ".twgit_features_subject"
+    ]
+}

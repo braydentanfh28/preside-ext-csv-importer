@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form i18nBaseUri="forms.csvImporter:">
+
+	<tab id="default">
+		<fieldset id="default">
+			<field name="object"     control="csvImportObjectPicker" required="true"     />
+			<field name="file"       control="fileupload"            required="true"     class="form-control" accept="csv" />
+			<field name="has_header" control="yesNoSwitch"           defaultValue="true" />
+		</fieldset>
+	</tab>
+
+</form>
