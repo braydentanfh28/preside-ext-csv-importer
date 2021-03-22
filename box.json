@@ -1,9 +1,8 @@
 {
     "name":"PresideCMS Extension: CSV Importer",
     "type":"preside-extensions",
-    "version":"0.1.0",
+    "version":"1.0.0",
     "location":"",
-    "private":true,
     "author":"Brayden Tan",
     "directory":"application/extensions",
     "repository":{
