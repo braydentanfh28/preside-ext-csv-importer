@@ -6,15 +6,18 @@ component {
 
 	/**
 	 * @formsService.inject          FormsService
+	 * @poService.inject             PresideObjectService
 	 * @csvStorageProvider.inject    CsvImporterStorageProvider
 	 * @csvImporterConfig.inject     coldbox:setting:csvImporter
 	 */
 	public any function init(
 		  required any    formsService
+		, required any    poService
 		, required any    csvStorageProvider
 		, required struct csvImporterConfig
 	) {
 		_setFormsService( arguments.formsService );
+		_setPoService( arguments.poService );
 		_setCsvStorageProvider( arguments.csvStorageProvider );
 		_setCsvImporterConfig( arguments.csvImporterConfig );
 
@@ -149,16 +152,41 @@ component {
 							}
 						}
 
-						mappedData = _processCsvConfigMappedData(
-							  arrIds = mappedArrIds
-							, line   = line
-						);
+						transaction {
+							mappedData = _processCsvConfigMappedData(
+								  arrIds = mappedArrIds
+								, line   = line
+							);
 
-						if ( withHeader and lineNo eq 1 ) {
-							arguments.logger.info( "Imported file has header, skipping header row during import." );
-						} else {
-							if ( !isEmpty( mappedData ) ) {
-								$getPresideObject( object ).insertData( data=mappedData );
+							if ( withHeader and lineNo eq 1 ) {
+								if ( canInfo ) {
+									arguments.logger.info( "Imported file has header, skipping header row during import." );
+								}
+							} else {
+								for ( var key in mappedData ) {
+									if ( isJSON( mappedData[ key ] ) ) {
+										var propDetail     = _getPoService().getObjectProperty( objectName=object, propertyName=key );
+										var propRelatedObj = propDetail.relatedto ?: "";
+
+										if ( _getPoService().objectExists( objectName=propRelatedObj ) ) {
+											var relatedData  = deserializeJSON( mappedData[ key ] );
+											var newRelatedId = relatedData.id ?: "";
+
+											if ( isEmpty( newRelatedId ) or !$getPresideObject( propRelatedObj ).dataExists( id=newRelatedId ) ) {
+												newRelatedId = $getPresideObject( propRelatedObj ).insertData( data=relatedData );
+											}
+
+											if ( !isEmpty( newRelatedId ) ) {
+												mappedData[ "#key#_raw" ] = mappedData[ key ];
+												mappedData[ key ]         = newRelatedId;
+											}
+										}
+									}
+								}
+
+								if ( !isEmpty( mappedData ) ) {
+									$getPresideObject( object ).insertData( data=mappedData );
+								}
 							}
 						}
 
@@ -284,6 +312,13 @@ component {
 	}
 	private void function _setFormsService( required any formsService ) {
 		_formsService = arguments.formsService;
+	}
+
+	private any function _getPoService() {
+		return _poService;
+	}
+	private void function _setPoService( required any poService ) {
+		_poService = arguments.poService;
 	}
 
 	private any function _getCsvStorageProvider() {
